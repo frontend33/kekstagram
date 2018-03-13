@@ -1,4 +1,5 @@
 'use strict'
+
 var RandomValues=function getUnique(items) {
   // Make a copy of the array
   var tmp = items.slice(items);
@@ -77,7 +78,7 @@ var comments=["Всё отлично!","В целом всё неплохо. Н�
 
 var userDialog=document.querySelector('.gallery-overlay')
 //Удаляем класс hidden что бы показать окно с картинок
-userDialog.classList.remove('hidden');
+// userDialog.classList.remove('hidden');
 
 //Отрисуем в блок pictures.
 var similarListElement=document.querySelector('.pictures');
@@ -94,33 +95,104 @@ var renderWizard=function(element){
   wizardElement.querySelector('img').src = element.url;
 	wizardElement.querySelector('.picture-likes').textContent=element.comments;
 	wizardElement.querySelector('.picture-comments').textContent=element.likes;
+
 	return wizardElement;
 	}
 
 
-	
-//Отрисовываем сгенерированные DOM-элементы в блок .pictures
-var fragment=document.createDocumentFragment();
+var drawElementPhoto = function (array) {
+  var fragment = document.createDocumentFragment();
+  var similarPhotoList = document.querySelector('.pictures');
 
-for (var i=0;i<pictures.length;i++){
-	//Во fragment добавляем наших картинок
-	fragment.appendChild(renderWizard(pictures[i]));
+  for (var i = 0; i < array.length; i++) {
+    fragment.appendChild(renderWizard(array[i]));
+  }
 
+  return similarPhotoList.appendChild(fragment);
+  };
+
+
+var successHandler = function (data) {
+  var dataPicture = pictures;
+  drawElementPhoto(dataPicture);
+  };
+
+successHandler(pictures);
+
+/*
+// Вешаем события
+// Создали функцию addClass которая добавляет класс hidden в наше окно
+var addClass= function (element, className) {
+  // gallery.classList.add('hidden');
+  element.classList.add(className);
 }
-//И потом добавляем наш фрагмент в список  картинок 
 
-similarListElement.appendChild(fragment);
 
-// Создал функкцию Gallery что бы перезаписать dom элемент с классом gallery-overlay
-// на нужные мне значения с массива
-var Gallery=function(element){
-  var firstArrayImg=document.querySelector('.gallery-overlay').querySelector('img').src=element.url;
-  var firstArrayLikes=document.querySelector('.likes-count').textContent=element.likes;
-  var firstArrayComments=document.querySelector('.comments-count').textContent=element.comments;
-  // return GalleryElement
+// Удаляем класс hidden в нашем окне
+var removeClass= function (element, className) {
+  // gallery.classList.remove('hidden');
+  element.classList.remove(className);
+    }
+*/
+
+// Находим нашу галерею
+var gallery = document.querySelector('.gallery-overlay');
+// Находим наш крестик
+var galleryClose = gallery.querySelector('.gallery-overlay-close');
+// Находим блок с картинками
+var picturesField = document.querySelector('.pictures');
+// Пишем функцию которая закроет картинку по ESC
+var onPopupEscPress=function(evt){
+    window.util.eventEsc(evt,closePopupReview);
+  // if (evt.keyCode===ESC_KEYCODE){
+  //   closePopupReview(); 
+
 };
+//Создаем обзор картинок
+var createPictureReview = function (picture, targetPicture) {
+    picture.querySelector('img').src = targetPicture.querySelector('img').src;
+    picture.querySelector('.likes-count').textContent = targetPicture.querySelector('.picture-likes');
+    picture.querySelector('.likes-count').textContent = targetPicture.querySelector('.picture-likes').textContent;
+    picture.querySelector('.comments-count').textContent = targetPicture.querySelector('.picture-comments').textContent;
+  };
 
-// Решил что бы рандомно выбрасывал один объект с массива
-var item = pictures[Math.floor(Math.random()*pictures.length)];
 
-Gallery(item);
+// Написал функцию которая открывает текущую картинку при клике на нее
+var openPictureReview = function (evt) {
+    // Мы используем event.target что бы получить элемент на котором произошло событие(Делигирование)
+    // Внутри обработчика мы должны разобраться в каком именно '.picture' был клик
+    // для этого и нужен метод closest
+  var targetPicture = evt.target.closest('.picture');
+  if (targetPicture) {
+    // document.addEventListener('keydown', onReviewEscKeydown);
+    // Добавляем событие закрытия окна при помощи клавиши ESC 
+    document.addEventListener("keydown",onPopupEscPress)
+    window.util.removeClass(gallery,'hidden');
+    createPictureReview(gallery, targetPicture);
+    }
+  };
+
+// Вызываем функцию которая закрывает выбранную картинку
+var closePopupReview = function () {
+    window.util.addClass(gallery, 'hidden');
+    // Добавляем удаления событие закрытия окна при помощи клавиши ESC так как уже все закрыто
+    document.removeEventListener("keydown",onPopupEscPress) 
+    // document.removeEventListener('keydown', onReviewEscKeydown);
+  };
+
+// Добавляем событие при клике на изображение в блоке pictures  
+picturesField.addEventListener('click', function (evt) {
+  evt.preventDefault();
+  // Вызываем функцию которая открывает выбранное изображение
+  openPictureReview(evt);
+  });
+// Закрываем событие при клике на крестик
+galleryClose.addEventListener('click', function (evt) {
+  evt.preventDefault();
+  closePopupReview();
+  });
+
+galleryClose.addEventListener('keydown',function(evt){
+  window.util.eventEnter(evt,closePopupReview)
+
+});
