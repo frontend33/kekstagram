@@ -88,18 +88,20 @@ var similarWizardTemplate=document.querySelector('#picture-template').content;
 
 
 var renderWizard=function(element){ 
-//Копируем шаблон 15 раз, вместе со всем содержимым поэтому использую глубокое копирование 
+//Копируем шаблон 15 раз, вместе со всем содержимым поэтому
+ // использую глубокое копирование 
 	var wizardElement=similarWizardTemplate.cloneNode(true);
 	//Теперь заменяем textContent каждого из картинок на содержимое массива с ключом name
   // wizardElement.querySelector('#searchSrc').textContent=element.url;
-  wizardElement.querySelector('img').src = element.url;
+  	wizardElement.querySelector('img').src = element.url;
 	wizardElement.querySelector('.picture-likes').textContent=element.comments;
 	wizardElement.querySelector('.picture-comments').textContent=element.likes;
 
 	return wizardElement;
 	}
 
-
+// Отрисовка фото, создаем фрагмент и идем по циклу массива
+// Записываем во fragment все изображения 
 var drawElementPhoto = function (array) {
   var fragment = document.createDocumentFragment();
   var similarPhotoList = document.querySelector('.pictures');
@@ -107,7 +109,7 @@ var drawElementPhoto = function (array) {
   for (var i = 0; i < array.length; i++) {
     fragment.appendChild(renderWizard(array[i]));
   }
-
+// После того как записали все изображения во фрагмент переносим в блок pictures разом
   return similarPhotoList.appendChild(fragment);
   };
 
@@ -135,6 +137,8 @@ var removeClass= function (element, className) {
     }
 */
 
+
+// 								Galery
 // Находим нашу галерею
 var gallery = document.querySelector('.gallery-overlay');
 // Находим наш крестик
