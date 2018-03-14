@@ -111,7 +111,7 @@ var drawElementPhoto = function (array) {
   return similarPhotoList.appendChild(fragment);
   };
 
-
+// Из массива вытаскиваем фото
 var successHandler = function (data) {
   var dataPicture = pictures;
   drawElementPhoto(dataPicture);
